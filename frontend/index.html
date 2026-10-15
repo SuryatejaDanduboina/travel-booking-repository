@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Booking</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #075985;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000012;
+        }
+
+        h2 {
+            color: #075985;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 22px;
+            background: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0369a1;
+        }
+
+        #result {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Travel Booking</h1>
+        <p>Explore the world with us!</p>
+    </header>
+
+    <main class="container">
+        <h2>Book Your Trip</h2>
+
+        <form id="bookingForm">
+            <label for="name">Your Name</label>
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+                required
+            >
+
+            <label for="destination">Choose Destination</label>
+            <select id="destination" required>
+                <option value="">Select destination</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Sydney">Sydney</option>
+                <option value="Singapore">Singapore</option>
+            </select>
+
+            <button type="submit">Book Now</button>
+        </form>
+
+        <div id="result" role="status"></div>
+    </main>
+
+    <footer>
+        Travel Booking App | AWS Full-Stack Project
+    </footer>
+
+    <script>
+        const API_BASE = "/api";
+
+        document.getElementById("bookingForm")
+            .addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                const result = document.getElementById("result");
+                result.textContent = "Submitting booking...";
+
+                const booking = {
+                    name: document.getElementById("name").value.trim(),
+                    destination: document.getElementById("destination").value
+                };
+
+                try {
+                    const response = await fetch(
+                        `${API_BASE}/bookings`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(booking)
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || "Booking failed");
+                    }
+
+                    result.textContent = data.message;
+                    result.style.background = "#dcfce7";
+                    result.style.color = "#166534";
+
+                    this.reset();
+                } catch (error) {
+                    result.textContent =
+                        "Booking failed: " + error.message;
+                    result.style.background = "#fee2e2";
+                    result.style.color = "#991b1b";
+                }
+            });
+    </script>
+</body>
+</html>
